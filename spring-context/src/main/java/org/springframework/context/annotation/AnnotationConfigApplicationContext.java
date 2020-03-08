@@ -53,8 +53,17 @@ import org.springframework.util.Assert;
  */
 public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
 
+	/**
+	 * 这个类顾名思义是一个Reader，一个读取器
+	 * 读取一个被加了注解的bean
+	 * 这个类在构造方法中实例化的
+	 */
 	private final AnnotatedBeanDefinitionReader reader;
 
+	/**
+	 * 这个类顾名思义是一个扫描器，扫描所有加了注解的bean
+	 * 同样是在构造方法中实例化的
+	 */
 	private final ClassPathBeanDefinitionScanner scanner;
 
 
@@ -63,7 +72,15 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		/**
+		 * 创建一个读取注解的Bean定义读取器
+		 * 什么是Bean定义？BeanDefinition
+		 * BeanDefinition这个类是描述springBean对象的类。
+		 */
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		/**
+		 * 创建一个扫描器，扫描所有加了注解的类
+		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -83,8 +100,17 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @param annotatedClasses one or more annotated classes,
 	 * e.g. {@link Configuration @Configuration} classes
 	 */
+	/**
+	 * 这个构造方法需要传入一个被Javaconfig注解过的配置类
+	 * 然后会把这个被注解了的配置类通过注解读取器读取后进行解析
+	 * @param annotatedClasses
+	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
+		//这里由于它有父类，故而会先调用父类的构造方法，然后才会调用自己的构造方法，
+		//在自己的构造方法中初始化一个读取器和扫描器
 		this();
+		//注册单个bean给容器，比如有新加的类可以使用这个方法
+		//但是注册之后需要手动调用refresh()方法去触发容器解析注解
 		register(annotatedClasses);
 		refresh();
 	}
@@ -152,6 +178,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * e.g. {@link Configuration @Configuration} classes
 	 * @see #scan(String...)
 	 * @see #refresh()
+	 */
+	/**
+	 * register()方法有两个作用：
+	 * 		1.注册一个配置类
+	 * 		2.注册一个普通bean
+	 * @param annotatedClasses one or more annotated classes,
 	 */
 	@Override
 	public final void register(Class<?>... annotatedClasses) {
