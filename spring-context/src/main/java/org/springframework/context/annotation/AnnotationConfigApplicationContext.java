@@ -80,6 +80,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		/**
 		 * 创建一个扫描器，扫描所有加了注解的类
+		 * 可以用来扫描包或者类，继而转成BeanDefinition
+		 * 但是我们在自己项目中使用自动扫描注解的时候，扫描包的工作不是在这个scanner对象中完成的
+		 * 这里的scanner对象仅仅是为了程序员能够在外部调用AnnotationConfigApplicationContext对象的scan方法
 		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
