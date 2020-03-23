@@ -163,6 +163,7 @@ class ConfigurationClassParser {
 
 
 	public void parse(Set<BeanDefinitionHolder> configCandidates) {
+		// 根据BeanDefinition的类型做不同的处理，一般都会调用ConfigurationClassParser的parse进行解析
 		for (BeanDefinitionHolder holder : configCandidates) {
 			BeanDefinition bd = holder.getBeanDefinition();
 			try {
@@ -245,7 +246,7 @@ class ConfigurationClassParser {
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass);
 		}
 		while (sourceClass != null);
-
+		// 一个map，用来存放扫描出来的bean（注意：这里的bean不是对象，仅仅是bean的信息，因为还没有到实例化）
 		this.configurationClasses.put(configClass, configClass);
 	}
 
