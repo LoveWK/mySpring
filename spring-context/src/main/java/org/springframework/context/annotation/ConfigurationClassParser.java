@@ -287,9 +287,12 @@ class ConfigurationClassParser {
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
+				// 扫描普通类=componentScan = com.wk
+				// 这里扫描出来所有带有@Component注解的类转换成的bd
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
+				// 检查扫描出来的类当中是否含有configuration
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
 					if (bdCand == null) {
@@ -301,8 +304,29 @@ class ConfigurationClassParser {
 				}
 			}
 		}
-
+		/**
+		 * 上面的代码就是扫描普通类---@Component，并且放到map中去
+		 */
 		// Process any @Import annotations
+		// 处理带有@Import注解的类
+		// imports有三种情况
+		// 1.加了@ImportSelector注解的类
+		// 2.普通类
+		// 3.ImportBeanDefinitionRegistrar
+		/**
+		 * 这里处理的import是需要判断我们的类当中是否含有@Import注解
+		 * 如果有，就 把@Import当中的值拿出来，是一个类
+		 * 比如@Import(xxx.class),那么这里便把xxx传进去进行解析
+		 * 在解析的过程中如果发觉是一个ImportSelector，那么就会回调selector的方法
+		 * 返回一个字符串(类名),通过这个字符串得到一个类
+		 * 继而再递归调用本方法来处理这个类
+		 * 为什么要单独写这么多注释来说明这个方法？
+		 * 因为selector返回的那个类，严格意义上来讲不符合@Import(xxx.class),因为这个类没有被直接import
+		 * 如果不符合就不会调用这个方法getImports(sourceClass)就是得到所有的import的类
+		 * 但值得注意的是递归当中是没有getImports(sourceClass)的，意思是直接把selector当中返回的类直接当成一个import的类去解析
+		 * 总之就是一句话，@Import(xxx.class),那么xxx这个类就会被解析
+		 * 如果xxx是selector的，那么他当中返回的类虽然没有直接加上@Import,但是也会直接解析
+		 */
 		processImports(configClass, sourceClass, getImports(sourceClass), true);
 
 		// Process any @ImportResource annotations
@@ -562,6 +586,7 @@ class ConfigurationClassParser {
 					if (candidate.isAssignable(ImportSelector.class)) {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
 						Class<?> candidateClass = candidate.loadClass();
+						// 反射实现一个对象
 						ImportSelector selector = BeanUtils.instantiateClass(candidateClass, ImportSelector.class);
 						ParserStrategyUtils.invokeAwareMethods(
 								selector, this.environment, this.resourceLoader, this.registry);

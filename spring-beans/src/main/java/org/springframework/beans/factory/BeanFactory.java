@@ -26,6 +26,10 @@ import org.springframework.lang.Nullable;
  * further interfaces such as {@link ListableBeanFactory} and
  * {@link org.springframework.beans.factory.config.ConfigurableBeanFactory}
  * are available for specific purposes.
+ * 用于访问SpringBean容器的根接口
+ * 这是bean容器的基本客户端视图
+ * 扩展接口例如ListableBeanFactory和ConfigurableBeanFactory
+ * 可用于特定目的的
  *
  * <p>This interface is implemented by objects that hold a number of bean definitions,
  * each uniquely identified by a String name. Depending on the bean definition,
@@ -36,18 +40,31 @@ import org.springframework.lang.Nullable;
  * depends on the bean factory configuration: the API is the same. Since Spring
  * 2.0, further scopes are available depending on the concrete application
  * context (e.g. "request" and "session" scopes in a web environment).
+ * 这个接口由包含许多bean定义的对象实现
+ * 每个都由一个字符串名称唯一标识
+ * 通过这个bean的定义,工厂将返回所包含对象的独立实例(原型设计模式)
+ * 或单个共享实例(一个优于单例设计模式的选择,其中实例是工厂范围内的单例)
+ * 返回哪种类型的实例取决于bean工厂配置
+ * API是相同的
+ * 自spring 2.0以来,可以根据具体的应用程序上下文使用更多的范围
  *
  * <p>The point of this approach is that the BeanFactory is a central registry
  * of application components, and centralizes configuration of application
  * components (no more do individual objects need to read properties files,
  * for example). See chapters 4 and 11 of "Expert One-on-One J2EE Design and
  * Development" for a discussion of the benefits of this approach.
+ * 正中方法的要点是BeanFactory是应用程序组件的中心注册表 和 集中配置应用程序组件
+ * (例如,单个对象不再需要读取属性文件)
+ * 有关此方法的好处的讨论,请参阅"专家一对一J2EE设计和开发"的第四章和第11章
  *
  * <p>Note that it is generally better to rely on Dependency Injection
  * ("push" configuration) to configure application objects through setters
  * or constructors, rather than use any form of "pull" configuration like a
  * BeanFactory lookup. Spring's Dependency Injection functionality is
  * implemented using this BeanFactory interface and its subinterfaces.
+ * 注意:通常依赖注入("push"配置)通过setter或构造函数配置应用程序更好
+ * 而不是像BeanFactory查找那样使用任何形式的"pull"配置
+ * Spring的依赖注入功能是使用这个BeanFactory接口及其子接口实现的
  *
  * <p>Normally a BeanFactory will load bean definitions stored in a configuration
  * source (such as an XML document), and use the {@code org.springframework.beans}
@@ -56,15 +73,24 @@ import org.springframework.lang.Nullable;
  * constraints on how the definitions could be stored: LDAP, RDBMS, XML,
  * properties file, etc. Implementations are encouraged to support references
  * amongst beans (Dependency Injection).
+ * 通常,BeanFactory将加载存储在配置源(如XML文档)中的bean定义,并使用@code包来配置bean,
+ * 但是,实现可以简单地返回它在Java代码中直接创建的Java对象
+ * 对于如何存储定义没有限制:LDAP, RDBMS, XML,属性文件等等,
+ * 鼓励实现支持bean之间的引用(依赖注入)
  *
  * <p>In contrast to the methods in {@link ListableBeanFactory}, all of the
  * operations in this interface will also check parent factories if this is a
  * {@link HierarchicalBeanFactory}. If a bean is not found in this factory instance,
  * the immediate parent factory will be asked. Beans in this factory instance
  * are supposed to override beans of the same name in any parent factory.
+ * 与{ListableBeanFactory}中的方法相反,此接口中的所有操作也将检查父工厂是否为{HierarchicalBeanFactory}
+ * 如果在这个工厂实例中没有找到bean,将询问直接的父工厂
+ * 这个工厂实例中的bean,应该覆盖任何父工厂中同名的bean
  *
  * <p>Bean factory implementations should support the standard bean lifecycle interfaces
  * as far as possible. The full set of initialization methods and their standard order is:
+ * Bean工厂实现应该尽可能支持标准Bean生命周期接口
+ * 完整的初始化方法及其标准顺序是:
  * <ol>
  * <li>BeanNameAware's {@code setBeanName}
  * <li>BeanClassLoaderAware's {@code setBeanClassLoader}
@@ -120,6 +146,9 @@ public interface BeanFactory {
 	 * beans <i>created</i> by the FactoryBean. For example, if the bean named
 	 * {@code myJndiObject} is a FactoryBean, getting {@code &myJndiObject}
 	 * will return the factory, not the instance returned by the factory.
+	 * 用于取消对实例的引用,并通过FactoryBean将其与bean区分开来
+	 * 例如:如果这个bean的名字是myJndiObject它是一个FactoryBean,通过getting(&myJndiObject)
+	 * 将会返回这个工厂,而不是返回这个工厂的实例;
 	 */
 	String FACTORY_BEAN_PREFIX = "&";
 
@@ -135,6 +164,11 @@ public interface BeanFactory {
 	 * @return an instance of the bean
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the specified name
 	 * @throws BeansException if the bean could not be obtained
+	 * 返回指定bean的一个实例,该实例可以是共享的,也可以是独立的;
+	 * 该方法允许使用Spring BeanFactory作为单例或原型设计模式的替代,
+	 * 在单例bean的情况下,调用者可以保留对返回对象的引用.
+	 * 将别名翻译回相应的规范bean名称,
+	 * 将询问父工厂是否在此工厂实例中找不到bean.
 	 */
 	Object getBean(String name) throws BeansException;
 
@@ -152,6 +186,12 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no such bean definition
 	 * @throws BeanNotOfRequiredTypeException if the bean is not of the required type
 	 * @throws BeansException if the bean could not be created
+	 * 返回指定bean的一个实例,该实例可以是共享的也可以是独立的;
+	 * 行为与getBean()相同,但是如果bean不是必需的类型,则通过抛出BeanNotOfRequiredTypeException
+	 * 来提供类型安全性的度量
+	 * 这意味着ClassCastException不能像getBean()那样在正确的转换结果时抛出
+	 * 将别名翻译回相应的规范bean名称
+	 * 将询问父工厂是否在此工厂实例中找不到bean;
 	 */
 	<T> T getBean(String name, Class<T> requiredType) throws BeansException;
 
@@ -168,6 +208,9 @@ public interface BeanFactory {
 	 * the affected bean isn't a prototype
 	 * @throws BeansException if the bean could not be created
 	 * @since 2.5
+	 * 返回指定bean的一个实例,该实例可以是共享的也可以是独立的;
+	 * 允许指定显式构造函数参数/工厂方法参数,
+	 * 覆盖bean定义中指定的默认参数(如果有的话)
 	 */
 	Object getBean(String name, Object... args) throws BeansException;
 
@@ -184,6 +227,11 @@ public interface BeanFactory {
 	 * @throws BeansException if the bean could not be created
 	 * @since 3.0
 	 * @see ListableBeanFactory
+	 * 返回唯一匹配给定对象类型的bean实例,如果有的话
+	 * 该方法进入ListableBeanFactory的按类型查找领域,
+	 * 但是也可以根据给定类型的名称转换为传统的按名称查找
+	 * 用于跨bean集进行更广泛的检索操作
+	 * 通过使用ListableBeanFactory或者BeanFactoryUtils
 	 */
 	<T> T getBean(Class<T> requiredType) throws BeansException;
 
@@ -204,6 +252,13 @@ public interface BeanFactory {
 	 * the affected bean isn't a prototype
 	 * @throws BeansException if the bean could not be created
 	 * @since 4.1
+	 * 返回指定bean的一个实例,该实例可以是共享的也可以是独立的;
+	 * 允许指定显式构造函数参数/工厂方法参数,
+	 * 覆盖bean定义中指定的默认参数(如果有的话)
+	 * 该方法进入ListableBeanFactory的按类型查找领域,
+	 * 但是也可以根据给定类型的名称转换为传统的按名称查找
+	 * 用于跨bean集进行更广泛的检索操作
+	 * 通过使用ListableBeanFactory或者BeanFactoryUtils
 	 */
 	<T> T getBean(Class<T> requiredType, Object... args) throws BeansException;
 
@@ -214,6 +269,7 @@ public interface BeanFactory {
 	 * @return a corresponding provider handle
 	 * @since 5.1
 	 * @see #getBeanProvider(ResolvableType)
+	 * 返回指定bean的提供程序,允许延迟按需检索实例,包括可用性和唯一性选项
 	 */
 	<T> ObjectProvider<T> getBeanProvider(Class<T> requiredType);
 
@@ -230,6 +286,7 @@ public interface BeanFactory {
 	 * @see ObjectProvider#iterator()
 	 * @see ObjectProvider#stream()
 	 * @see ObjectProvider#orderedStream()
+	 * 返回指定bean的提供程序,允许延迟按需检索实例,包括可用性和唯一性选项
 	 */
 	<T> ObjectProvider<T> getBeanProvider(ResolvableType requiredType);
 
@@ -247,6 +304,12 @@ public interface BeanFactory {
 	 * will be able to obtain an instance for the same name.
 	 * @param name the name of the bean to query
 	 * @return whether a bean with the given name is present
+	 * 这个bean工厂是否包含一个bean定义或外部注册的具有给定名称的单例实例?
+	 * 如果给定的名称是别名,它将被转换为相应的规范bean名称
+	 * 如果这个工厂是分层的,将询问任何父工厂是否在这个工厂实例中找不到bean
+	 * 如果找到与给定名称匹配的bean定义或单例实例,该方法将返回true,无论指定的bean定义是具体的还是抽象的,
+	 * 是延迟的还是热切的,在作用域上是否如此,
+	 * 然而,请注意,这个方法的true返回值并不一定标识{getBean}能够获得同名的实例
 	 */
 	boolean containsBean(String name);
 
@@ -264,6 +327,12 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
 	 * @see #getBean
 	 * @see #isPrototype
+	 * 这是一个共享的单例bean吗?也就是说{getBean}总是返回相同的实例吗?
+	 * 注意:这个返回{false}的方法并不清楚的表示独立的实例,
+	 * 它指出了非单例实例,这也可能对应于一个作用域bean
+	 * 使用{isPrototype}操作显式地检查独立实例
+	 * 将别名翻译成相应的规范bean名称
+	 * 将询问父工厂是否在此工厂实例中找不到bean.
 	 */
 	boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
 
@@ -282,6 +351,12 @@ public interface BeanFactory {
 	 * @since 2.0.3
 	 * @see #getBean
 	 * @see #isSingleton
+	 * 这个bean是原型吗?也就是说,{getBean}总是返回独立的实例
+	 * 注意:这个返回{false}的方法并不清楚的表示一个单例对象
+	 * 它指示非独立的实例,这些实例也可能对应于作用域的bean
+	 * 使用{isSingleton}操作显示的检查共享的单例实例
+	 * 将别名翻译成相应的规范bean名称
+	 * 将询问父工厂是否在此工厂实例中找不到bean
 	 */
 	boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
 
@@ -299,6 +374,10 @@ public interface BeanFactory {
 	 * @since 4.2
 	 * @see #getBean
 	 * @see #getType
+	 * 检查具有给定名称的bean是否匹配指定的类型
+	 * 更具体地说,检查对于给定名称的{getBean}调用是否会返回可分配给指定目标类型的对象;
+	 * 将别名翻译成相应的规范bean名称
+	 * 将询问父工厂是否在此工厂实例中找不到bean
 	 */
 	boolean isTypeMatch(String name, ResolvableType typeToMatch) throws NoSuchBeanDefinitionException;
 
@@ -316,6 +395,7 @@ public interface BeanFactory {
 	 * @since 2.0.1
 	 * @see #getBean
 	 * @see #getType
+	 *
 	 */
 	boolean isTypeMatch(String name, Class<?> typeToMatch) throws NoSuchBeanDefinitionException;
 
@@ -332,6 +412,11 @@ public interface BeanFactory {
 	 * @since 1.1.2
 	 * @see #getBean
 	 * @see #isTypeMatch
+	 * 确定具有给定名称的bean的类型,更具体地说,确定{getBean}为给定名称返回的对象类型.
+	 * 对于{FactoryBean},返回FactoryBean创建的对象类型,由{FactoryBean的getObjectType()}公开;
+	 * 这可能导致前面未初始化的{FactoryBean}的初始化(参见{getType(String,boolean)}).
+	 * 将别名翻译成相应的规范bean名称
+	 * 将询问父工厂是否在此工厂实例中找不到bean
 	 */
 	@Nullable
 	Class<?> getType(String name) throws NoSuchBeanDefinitionException;
@@ -346,6 +431,10 @@ public interface BeanFactory {
 	 * @param name the bean name to check for aliases
 	 * @return the aliases, or an empty array if none
 	 * @see #getBean
+	 * 返回给定bean名称的别名,如果有的话.
+	 * 当在{getBean}调用中使用时,所有这些别名都指向同一个bean;
+	 * 如果给定的名称是别名,则返回相应的原始bean名称和其他别名(如果与),原始bean名称是数字中的第一个元素.
+	 * 将询问父工厂是否在此工厂实例中找不到bean;
 	 */
 	String[] getAliases(String name);
 

@@ -98,7 +98,9 @@ final class PostProcessorRegistrationDelegate {
 			registryProcessors.addAll(currentRegistryProcessors);
 			// 这里很重要
 			// currentRegistryProcessors 这个集合中只有ConfigurationClassPostProcessor这一个类
+			// 执行所有的BeanDefinitionRegistryPostProcessor
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+			// 执行完成了所有的BeanDefinitionRegistryPostProcessor
 
 			// 这个list是一个临时变量，故而要删除
 			currentRegistryProcessors.clear();
@@ -135,7 +137,11 @@ final class PostProcessorRegistrationDelegate {
 			}
 
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			// 执行BeanFactoryPostProcessors的回调
+			// 前面执行的是BeanFactoryPostProcessor的子类，BeanDefinitionRegistryPostProcessors的回调
+			// 这是执行的BeanFactoryPostProcessor
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
+			// 自定义的BeanFactoryPostProcessor
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		}
 

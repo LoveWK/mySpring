@@ -89,7 +89,7 @@ abstract class ConfigurationClassUtils {
 		if (className == null || beanDef.getFactoryMethodName() != null) {
 			return false;
 		}
-
+		// 判断是不是一个注解类
 		AnnotationMetadata metadata;
 		if (beanDef instanceof AnnotatedBeanDefinition &&
 				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
@@ -127,12 +127,19 @@ abstract class ConfigurationClassUtils {
 		}
 
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
+		// 判断当前这个bd中存在的类是不是加了@Configuration注解
+		// 如果存在则spring认为它是一个全注解的类
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
+			// 如果存在@Configuration注解，则为BeanDefinition设置configurationClass属性为full
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
-		// 判断当前这个bd中存在的类是不是加了@Configuration注解
+		// 如果不存在@Configuration注解，spring则认为它是一个部分注解的类
+		// 判断是否加了以下注解，摘录isLiteConfigurationCandidate的源码
+		// candidateIndicators.add(Component.class.getName());
+		// candidateIndicators.add(ComponentScan.class.getName());
+		// candidateIndicators.add(Import.class.getName());
+		// candidateIndicators.add(ImportResource.class.getName());
 		else if (config != null || isConfigurationCandidate(metadata)) {
-			// 如果存在@Configuration注解，则为BeanDefinition设置configurationClass属性为full
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
 		else {
