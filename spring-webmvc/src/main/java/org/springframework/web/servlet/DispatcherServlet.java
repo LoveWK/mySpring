@@ -44,6 +44,7 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.ClassPathResource;
@@ -363,8 +364,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * indicates which {@code ApplicationContextInitializer} classes should be used to
 	 * further configure the internal application context prior to refresh().
 	 * @see #DispatcherServlet(WebApplicationContext)
+	 * @param context
 	 */
-	public DispatcherServlet() {
+	public DispatcherServlet(AnnotationConfigApplicationContext context) {
 		super();
 		setDispatchOptionsRequest(true);
 	}

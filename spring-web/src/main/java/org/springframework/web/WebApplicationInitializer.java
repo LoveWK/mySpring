@@ -184,6 +184,6 @@ public interface WebApplicationInitializer {
 	 * @throws ServletException if any call against the given {@code ServletContext}
 	 * throws a {@code ServletException}
 	 */
-	void onStartup(ServletContext servletContext) throws ServletException;
+	void onStartup(ServletContext servletContext) throws ServletException, javax.servlet.ServletException;
 
 }

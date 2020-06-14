@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
 
 @SuppressWarnings("rawtypes")//jdk8如果不使用这个注解会导致报rawtypes类型错误
 public class MyFactoryBean implements FactoryBean, InvocationHandler {
@@ -33,7 +34,7 @@ public class MyFactoryBean implements FactoryBean, InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args){
-		System.out.println("myInvocationHandler....");
+		System.out.println("MyFactoryBean:myInvocationHandler....");
 		//可以在这里通过method进行自己的逻辑处理
 		Method[] methods = proxy.getClass().getInterfaces()[0].getMethods();
 		for (Method method1 : methods){

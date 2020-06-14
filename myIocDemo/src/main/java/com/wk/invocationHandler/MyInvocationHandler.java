@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 public class MyInvocationHandler implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) {
-		System.out.println("myInvocationHandler....");
+		System.out.println("myInvocationHandler...."+proxy.getClass().getSimpleName());
 		//可以在这里通过method进行自己的逻辑处理
 		return null;
 	}

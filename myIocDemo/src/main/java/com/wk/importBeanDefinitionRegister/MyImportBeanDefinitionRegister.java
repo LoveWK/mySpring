@@ -22,7 +22,7 @@ public class MyImportBeanDefinitionRegister implements ImportBeanDefinitionRegis
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(IndexUCC.class);
 		//得到标准的BeanDefinition
 		GenericBeanDefinition beanDefinition = (GenericBeanDefinition) builder.getBeanDefinition();
-		System.out.println(beanDefinition.getBeanClassName());
+		System.out.println("ImportBeanDefinitionRegistrar:"+beanDefinition.getBeanClassName());
 		// 设置构造方法,因为MyFactoryBean不是使用的默认构造方法，如果使用的无参构造方法，spring比较容易创建对象实例，
 		// 但是如果是我们自己的构造方法，那么spring就没有办法自动帮我们创建对象了，
 		// 所以我们要手动设置自己的构造方法，来实例化对象

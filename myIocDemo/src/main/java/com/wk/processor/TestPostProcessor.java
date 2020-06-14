@@ -8,17 +8,19 @@ import org.springframework.stereotype.Component;
 public class TestPostProcessor implements BeanPostProcessor {
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if("dao".equals(beanName)){
-			System.out.println("before processor");
-		}
+		/*if("dao".equals(beanName)){
+			System.out.println("BeanPostProcessor:before processor");
+		}*/
+//		System.out.println(beanName+":BeanPostProcessor:before processor");
 		return bean;
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if("dao".equals(beanName)){
-			System.out.println("after processor");
-		}
+		/*if("dao".equals(beanName)){
+			System.out.println("BeanPostProcessor:after processor");
+		}*/
+//		System.out.println(beanName+":BeanPostProcessor:after processor");
 		return bean;
 	}
 }

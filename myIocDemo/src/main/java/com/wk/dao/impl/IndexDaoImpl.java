@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 public class IndexDaoImpl implements IndexDao {
 	@Override
 	public void query() {
-		System.out.println("dao");
+		System.out.println("dao-query()");
 	}
 }
